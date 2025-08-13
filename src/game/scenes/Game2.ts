@@ -23,12 +23,6 @@ export class Game2 extends Scene {
 		private playerName: string,
 	) {
 		super("Game2");
-		this.currentIndex = 0;
-		this.combo = [];
-		this.comboImages = [];
-		this.score = 0;
-		this.heartCount = 3;
-		this.heartImages = [];
 	}
 
 	init(data: { playerName: string }) {
@@ -113,6 +107,14 @@ export class Game2 extends Scene {
 	}
 
 	create() {
+		// init
+		this.currentIndex = 0;
+		this.combo = [];
+		this.comboImages = [];
+		this.score = 0;
+		this.heartCount = 3;
+		this.heartImages = [];
+
 		const screenCenterX =
 			this.cameras.main.worldView.x + this.cameras.main.width / 2;
 		const screenCenterY =

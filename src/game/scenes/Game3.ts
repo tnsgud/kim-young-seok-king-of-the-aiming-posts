@@ -31,5 +31,21 @@ export class Game3 extends Scene {
 		this.add
 			.text(screenCenterX, screenCenterY + 100, `Score: ${this.score}`)
 			.setOrigin(0.5, 0.5);
+
+		const rectangle = this.add
+			.rectangle(0, 0, 120, 30, 0x000000)
+			.setRounded()
+			.setOrigin(0.5, 0.5);
+		const text = this.add.text(0, 0, "Restart ?").setOrigin(0.5, 0.5);
+
+		const container = this.add.container(screenCenterX, screenCenterY + 150, [
+			rectangle,
+			text,
+		]);
+
+		Phaser.Display.Align.In.Center(text, rectangle);
+
+		rectangle.setInteractive();
+		rectangle.on("pointerdown", () => this.scene.start("Game"));
 	}
 }
