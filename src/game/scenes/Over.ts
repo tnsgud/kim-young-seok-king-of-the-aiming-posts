@@ -1,11 +1,11 @@
 import { Scene } from "phaser";
 
-export class Game3 extends Scene {
+export class Over extends Scene {
 	constructor(
 		private score: number,
 		private playerName: string,
 	) {
-		super("Game3");
+		super("Over");
 	}
 
 	init(data: { score: number; playerName: string }) {

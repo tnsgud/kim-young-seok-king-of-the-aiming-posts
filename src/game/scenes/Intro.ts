@@ -1,18 +1,14 @@
 import { Scene } from "phaser";
+import { screenCenterX, screenCenterY } from "../main";
 
-export class Game extends Scene {
+export class Intro extends Scene {
 	constructor(private startButton: Phaser.GameObjects.Text) {
-		super("Game");
+		super("Intro");
 	}
 
 	preload() {}
 
 	create() {
-		const screenCenterX =
-			this.cameras.main.worldView.x + this.cameras.main.width / 2;
-		const screenCenterY =
-			this.cameras.main.worldView.y + this.cameras.main.height / 2;
-
 		// Title
 		this.add
 			.text(screenCenterX, screenCenterY, "겨냥대 왕 김영석")
@@ -27,7 +23,7 @@ export class Game extends Scene {
 		this.startButton.on("pointerdown", () => {
 			const playerName = prompt("What is your name?");
 
-			this.scene.start("Game2", { playerName });
+			this.scene.start("Main", { playerName });
 		});
 	}
 }
