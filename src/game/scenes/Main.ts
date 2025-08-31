@@ -1,4 +1,4 @@
-/** biome-ignore-all assist/source/organizeImports: <explanation> */
+/** biome-ignore-all assist/source/organizeImports: 왜 하라는지 모르겠음 */
 import { Scene } from "phaser";
 import { Player } from "../player";
 import { Direction, directionText } from "../direction";
@@ -97,28 +97,22 @@ export class Main extends Scene {
 		}
 	}
 
-	check(direction: Direction) {
-		if (this.dialogActive) {
-			return;
+	comboMiss() {
+		this.resultText.setText("No!");
+		this.cameras.main.shake(400, 0.009);
+		this.heartImages[3 - this.heartCount--].setTexture("heart");
+		this.currentCombo = 0;
+		this.createCombo(4);
+
+		if (this.heartCount === 0) {
+			this.scene.start("Over", {
+				score: this.maxCombo,
+				player: this.player,
+			});
 		}
+	}
 
-		if (this.notes[this.currentIndex] !== direction) {
-			this.resultText.setText("No!");
-			this.cameras.main.shake(400, 0.009);
-			this.heartImages[3 - this.heartCount--].setTexture("heart");
-			this.currentCombo = 0;
-			this.createCombo(4);
-
-			if (this.heartCount === 0) {
-				this.scene.start("Over", {
-					score: this.maxCombo,
-					player: this.player,
-				});
-			}
-
-			return;
-		}
-
+	comboGood() {
 		this.resultText.setText("Good!");
 		this.noteImages[this.currentIndex++].setAlpha(0.5);
 		this.maxCombo =
@@ -135,77 +129,100 @@ export class Main extends Scene {
 			yoyo: true,
 			repeat: 2,
 		});
+	}
+
+	createDialog(options: {
+		closeButtonAction: () => void;
+		messageText: string;
+		buttonText: string;
+		buttonAction: () => void;
+	}) {
+		const background = this.add.graphics();
+		background.fillStyle(0x000000, 0.7); // 검은색, 투명도 70%
+		background.fillRect(
+			0,
+			0,
+			this.cameras.main.width,
+			this.cameras.main.height,
+		);
+
+		// 다이얼로그 창 (사각형)
+		const dialogBox = this.add.graphics();
+		const boxWidth = 400;
+		const boxHeight = 200;
+		const boxX = (this.cameras.main.width - boxWidth) / 2;
+		const boxY = (this.cameras.main.height - boxHeight) / 2;
+
+		dialogBox.fillStyle(0xffffff, 1);
+		dialogBox.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+		const closeText = this.add
+			.text(boxX + boxWidth - 20, boxY + 10, "X", {
+				color: "#000000",
+			})
+			.setInteractive();
+
+		closeText.on("pointerdown", () => {
+			options.closeButtonAction();
+			destry();
+		});
+
+		const message = this.add
+			.text(this.cameras.main.centerX, boxY + 50, options.messageText, {
+				fontSize: "24px",
+				color: "#000",
+				align: "center",
+				wordWrap: { width: boxWidth - 40 },
+			})
+			.setOrigin(0.5, 0.5);
+
+		const exitButton = this.add
+			.text(this.cameras.main.centerX, boxY + 150, options.buttonText, {
+				fontSize: "20px",
+				color: "#000",
+				backgroundColor: "#ddd",
+				padding: { x: 20, y: 10 },
+			})
+			.setOrigin(0.5)
+			.setInteractive();
+
+		// 버튼에 클릭 이벤트 추가
+		exitButton.on("pointerdown", () => {
+			options.buttonAction();
+			destry();
+		});
+
+		function destry() {
+			background.destroy();
+			dialogBox.destroy();
+			closeText.destroy();
+			message.destroy();
+			exitButton.destroy();
+		}
+	}
+
+	check(direction: Direction) {
+		if (this.dialogActive) {
+			return;
+		}
+
+		if (this.notes[this.currentIndex] !== direction) {
+			this.comboMiss();
+
+			return;
+		}
 
 		this.comboText.setText(`${this.currentCombo}\nCombo!`);
 
 		if (this.refusal && this.player.isCommissionAvaliable(this.maxCombo)) {
-			// 선택화면 띄우기
 			this.dialogActive = true;
 			const isNonCommissionOfficer = this.maxCombo === promotionScore.하사 - 2;
 
-			const background = this.add.graphics();
-			background.fillStyle(0x000000, 0.7); // 검은색, 투명도 70%
-			background.fillRect(
-				0,
-				0,
-				this.cameras.main.width,
-				this.cameras.main.height,
-			);
-
-			// 다이얼로그 창 (사각형)
-			const dialogBox = this.add.graphics();
-			const boxWidth = 400;
-			const boxHeight = 200;
-			const boxX = (this.cameras.main.width - boxWidth) / 2;
-			const boxY = (this.cameras.main.height - boxHeight) / 2;
-
-			dialogBox.fillStyle(0xffffff, 1);
-			dialogBox.fillRect(boxX, boxY, boxWidth, boxHeight);
-
-			const closeText = this.add
-				.text(boxX + boxWidth - 20, boxY + 10, "X", {
-					color: "#000000",
-				})
-				.setInteractive();
-
-			closeText.on("pointerdown", () => {
+			const closeButtonAction = () => {
 				this.dialogActive = false;
 				this.refusal = true;
-
-				background.destroy();
-				dialogBox.destroy();
-
-				message.destroy();
-				closeText.destroy();
-				exitButton.destroy();
-			});
-
-			const message = this.add
-				.text(
-					this.cameras.main.centerX,
-					boxY + 50,
-					`${isNonCommissionOfficer ? "하사" : "소위"} 로 임관하시겠습니까?`,
-					{
-						fontSize: "24px",
-						color: "#000",
-						align: "center",
-						wordWrap: { width: boxWidth - 40 },
-					},
-				)
-				.setOrigin(0.5, 0.5);
-
-			const exitButton = this.add
-				.text(this.cameras.main.centerX, boxY + 150, "임관하기", {
-					fontSize: "20px",
-					color: "#000",
-					backgroundColor: "#ddd",
-					padding: { x: 20, y: 10 },
-				})
-				.setOrigin(0.5)
-				.setInteractive();
-
-			// 버튼에 클릭 이벤트 추가
-			exitButton.on("pointerdown", () => {
+			};
+			const buttonAction = () => {
 				this.dialogActive = false;
 
 				if (isNonCommissionOfficer) {
@@ -221,13 +238,13 @@ export class Main extends Scene {
 				}
 
 				this.rankText.setText(`계급: ${this.player.getRank().level}`);
+			};
 
-				background.destroy();
-				dialogBox.destroy();
-
-				message.destroy();
-				closeText.destroy();
-				exitButton.destroy();
+			this.createDialog({
+				closeButtonAction,
+				messageText: `${isNonCommissionOfficer ? "하사" : "소위"} 로 임관하시겠습니까?`,
+				buttonText: "임관하기",
+				buttonAction,
 			});
 		}
 
@@ -236,84 +253,24 @@ export class Main extends Scene {
 				!this.refusal &&
 				this.player.getRank().level === EnlistedPersonnel.E_4
 			) {
-				// 전역화면 띄우기 (게임 끝)
-
-				// 투명한 배경을 만들어 게임 화면을 가림
-				this.dialogActive = true;
-				const background = this.add.graphics();
-				background.fillStyle(0x000000, 0.7); // 검은색, 투명도 70%
-				background.fillRect(
-					0,
-					0,
-					this.cameras.main.width,
-					this.cameras.main.height,
-				);
-
-				// 다이얼로그 창 (사각형)
-				const dialogBox = this.add.graphics();
-				dialogBox.fillStyle(0xffffff, 1);
-				const boxWidth = 400;
-				const boxHeight = 200;
-				const boxX = (this.cameras.main.width - boxWidth) / 2;
-				const boxY = (this.cameras.main.height - boxHeight) / 2;
-				dialogBox.fillRect(boxX, boxY, boxWidth, boxHeight);
-
-				console.log(boxX, boxY, boxWidth, boxHeight);
-
-				const closeText = this.add
-					.text(boxX + boxWidth - 20, boxY + 10, "X", {
-						color: "#000000",
-					})
-					.setInteractive();
-
-				closeText.on("pointerdown", () => {
+				const closeButtonAction = () => {
 					this.dialogActive = false;
 					this.refusal = true;
-
-					background.destroy();
-					dialogBox.destroy();
-
-					message.destroy();
-					exitButton.destroy();
-					closeText.destroy();
-				});
-
-				// 전역 메시지 텍스트
-				const message = this.add
-					.text(
-						this.cameras.main.centerX,
-						boxY + 50,
-						"축하합니다! 전역할 수 있습니다!",
-						{
-							fontSize: "24px",
-							color: "#000",
-							align: "center",
-							wordWrap: { width: boxWidth - 40 },
-						},
-					)
-					.setOrigin(0.5);
-
-				// 버튼 생성
-				const exitButton = this.add
-					.text(this.cameras.main.centerX, boxY + 150, "게임 종료", {
-						fontSize: "20px",
-						color: "#000",
-						backgroundColor: "#ddd",
-						padding: { x: 20, y: 10 },
-					})
-					.setOrigin(0.5)
-					.setInteractive();
-
-				// 버튼에 클릭 이벤트 추가
-				exitButton.on("pointerdown", () => {
+				};
+				const buttonAction = () => {
 					this.dialogActive = false;
-					// 전역 화면을 따로 만들어야 할듯
 					this.scene.start("Over", {
 						score: this.currentCombo,
 						player: this.player,
 					});
-				});
+				};
 
+				this.createDialog({
+					closeButtonAction,
+					messageText: "축하합니다! 전역할 수 있습니다!",
+					buttonText: "전역하기",
+					buttonAction,
+				});
 				return;
 			}
 
