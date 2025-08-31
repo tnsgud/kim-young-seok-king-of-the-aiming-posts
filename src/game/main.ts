@@ -5,8 +5,11 @@ import { Over } from "./scenes/Over";
 
 // Find out more information about the Game Config at:
 // https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
-const screenWidth = 430;
-const screenHeight = 932;
+export const screenWidth = 430;
+export const screenHeight = 932;
+export const screenCenterX = screenWidth / 2;
+export const screenCenterY = screenHeight / 2;
+
 const config: Types.Core.GameConfig = {
 	type: AUTO,
 	width: screenWidth,
@@ -19,9 +22,6 @@ const config: Types.Core.GameConfig = {
 	},
 	scene: [Intro, Main, Over],
 };
-
-export const screenCenterX = screenWidth / 2;
-export const screenCenterY = screenHeight / 2;
 
 const StartGame = (parent: string) => {
 	return new Game({ ...config, parent });

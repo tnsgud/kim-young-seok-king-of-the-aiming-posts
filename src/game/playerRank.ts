@@ -42,3 +42,32 @@ export enum CommissionedOfficer {
 	O_9 = "중장",
 	O_10 = "대장",
 }
+
+export const promotionScore: {
+	[key in
+		| EnlistedPersonnel
+		| NonCommissionedOfficer
+		| CommissionedOfficer]: number;
+} = {
+	[EnlistedPersonnel.E_1]: 1,
+	[EnlistedPersonnel.E_2]: 4,
+	[EnlistedPersonnel.E_3]: 7,
+	[EnlistedPersonnel.E_4]: 10,
+	//
+	[NonCommissionedOfficer.E_5]: 13,
+	[NonCommissionedOfficer.E_6]: 190,
+	[NonCommissionedOfficer.E_7]: 220,
+	[NonCommissionedOfficer.E_8]: 250,
+	[NonCommissionedOfficer.W_1]: 280,
+	// 90씩 증가
+	[CommissionedOfficer.O_1]: 15,
+	[CommissionedOfficer.O_2]: 240,
+	[CommissionedOfficer.O_3]: 330,
+	[CommissionedOfficer.O_4]: 420,
+	[CommissionedOfficer.O_5]: 510,
+	[CommissionedOfficer.O_6]: 600,
+	[CommissionedOfficer.O_7]: 690,
+	[CommissionedOfficer.O_8]: 780,
+	[CommissionedOfficer.O_9]: 870,
+	[CommissionedOfficer.O_10]: 1000,
+};

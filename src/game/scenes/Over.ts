@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import type { Player } from "../player";
 
 export class Over extends Scene {
 	constructor(
@@ -8,11 +9,9 @@ export class Over extends Scene {
 		super("Over");
 	}
 
-	init(data: { score: number; playerName: string }) {
+	init(data: { score: number; player: Player }) {
 		this.score = data.score;
-		this.playerName = data.playerName;
-
-		console.log(data);
+		this.playerName = data.player.getName();
 	}
 
 	create() {
@@ -46,6 +45,6 @@ export class Over extends Scene {
 		Phaser.Display.Align.In.Center(text, rectangle);
 
 		rectangle.setInteractive();
-		rectangle.on("pointerdown", () => this.scene.start("Game"));
+		rectangle.on("pointerdown", () => this.scene.start("Main"));
 	}
 }
