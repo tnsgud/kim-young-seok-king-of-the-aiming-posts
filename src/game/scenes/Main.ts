@@ -256,6 +256,7 @@ export class Main extends Scene {
         !this.refusal &&
         this.player.getRank().level === EnlistedPersonnel.E_4
       ) {
+        this.dialogActive = true;
         const closeButtonAction = () => {
           this.dialogActive = false;
           this.refusal = true;
