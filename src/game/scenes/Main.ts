@@ -212,6 +212,7 @@ export class Main extends Scene {
       return;
     }
 
+    this.comboGood()
     this.comboText.setText(`${this.currentCombo}\nCombo!`);
 
     if (this.refusal && this.player.isCommissionAvaliable(this.maxCombo)) {
